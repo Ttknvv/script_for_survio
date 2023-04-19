@@ -116,6 +116,25 @@ del contactsForOut['variable']
 #Переставление столбцов в нужный порядок
 contactsForOut = contactsForOut[['Дата', 'Источник', 'Дата сбора контактов', 'Имя супервайзера', 'МК', 'Механика', 'value']]
 
+
+#Удаление нулей
+contactsForOut = contactsForOut[contactsForOut['value'] != 0]
+contactsForOut = contactsForOut.copy()
+
+#Фрейм для NPI
+contactsForOutNPI = contactsForOut[(contactsForOut['Механика'] != "10+2") & (contactsForOut['Механика'] != "Retailer")]
+contactsForOutNPI = contactsForOutNPI.copy()
+
+#Фрейм для Опт
+contactsForOutOpt = contactsForOut[(contactsForOut['Механика'] == "10+2") | (contactsForOut['Механика'] == "Retailer")]
+contactsForOutOpt = contactsForOutOpt.copy()
+
+
+
 #Запись в файл
 with pd.ExcelWriter('out_file/out.xlsx', mode= 'a') as writer:
-    contactsForOut.to_excel(writer, sheet_name='Контакты', index=False)
+    contactsForOutNPI.to_excel(writer, sheet_name='Контакты NPI', index=False)
+
+#Запись в файл
+with pd.ExcelWriter('out_file/out.xlsx', mode= 'a') as writer:
+    contactsForOutOpt.to_excel(writer, sheet_name='Контакты Опт', index=False)
