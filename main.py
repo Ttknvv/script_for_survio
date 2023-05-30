@@ -56,26 +56,26 @@ hoursForOutNPI.loc[hoursForOutNPI['value'] == "8 KA", 'Часы'] = 8
 hoursForOutNPI = hoursForOutNPI.copy()
 hoursForOutNPI.loc[hoursForOutNPI['value'] == "4 KA", 'Часы'] = 4
 
-
+"""
 #Фрейм для Часов Опт
 hoursForOutOpt = hoursForOut[hoursForOut['value'] == "Опт"]
 hoursForOutOpt = hoursForOutOpt.copy()
 hoursForOutOpt.loc[hoursForOutOpt['value'] == "Опт", 'Механика'] = 1
 hoursForOutOpt = hoursForOutOpt.copy()
 hoursForOutOpt.loc[hoursForOutOpt['value'] == "Опт", 'Часы'] = 4
-
+"""
 #Запись в файл
 with pd.ExcelWriter('out_file/out.xlsx') as writer:
     pivotForObschFile.to_excel(writer, sheet_name='Свод для Общ файла', index=True)
 
-#Запис в файл
+#Запись в файл
 with pd.ExcelWriter('out_file/out.xlsx', mode= 'a') as writer:
     hoursForOutNPI.to_excel(writer, sheet_name='Часы для NPI', index=False)
-
-#Запис в файл
+"""
+#Запись в файл
 with pd.ExcelWriter('out_file/out.xlsx', mode= 'a') as writer:
     hoursForOutOpt.to_excel(writer, sheet_name='Часы для Опт', index=False)
-
+"""
 
 # КОНТАКТЫ
 
@@ -124,17 +124,18 @@ contactsForOut = contactsForOut.copy()
 #Фрейм для NPI
 contactsForOutNPI = contactsForOut[(contactsForOut['Механика'] != "10+2") & (contactsForOut['Механика'] != "Retailer")]
 contactsForOutNPI = contactsForOutNPI.copy()
-
+"""
 #Фрейм для Опт
 contactsForOutOpt = contactsForOut[(contactsForOut['Механика'] == "10+2") | (contactsForOut['Механика'] == "Retailer")]
 contactsForOutOpt = contactsForOutOpt.copy()
-
+"""
 
 
 #Запись в файл
 with pd.ExcelWriter('out_file/out.xlsx', mode= 'a') as writer:
     contactsForOutNPI.to_excel(writer, sheet_name='Контакты NPI', index=False)
-
+"""
 #Запись в файл
 with pd.ExcelWriter('out_file/out.xlsx', mode= 'a') as writer:
     contactsForOutOpt.to_excel(writer, sheet_name='Контакты Опт', index=False)
+"""
