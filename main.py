@@ -24,11 +24,12 @@ hours['Дата'] = pd.to_datetime(hours['Дата'])
 hours["Дата"] = hours["Дата"].dt.strftime("%d.%m.%Y")
 
 #Обратное свертывание
-hoursForOut = hours.melt(id_vars=['Дата', 'Источник', 'Дата сбора контактов', 'Имя супервайзера'])
+hoursForOutFirst = hours.melt(id_vars=['Дата', 'Источник', 'Дата сбора контактов', 'Имя супервайзера'])
 
 #Удаление лишних строк
-hoursForOut = hoursForOut.dropna(subset= ["value"])
+hoursForOut = hoursForOutFirst.dropna(subset= ["value"])
 hoursForOut = hoursForOut[hoursForOut['value'] != "Не работал"]
+hoursForOut = hoursForOut[hoursForOut['value'] != "Уволен/Уволился"]
 
 #Удаление не нужного текста
 hoursForOut['variable'] = hoursForOut['variable'].str.replace('Выберите механику и количество отработанных часов x ', '')
@@ -40,21 +41,10 @@ pivotForObschFile = pivotForObschFile.groupby('Имя супервайзера')
 #Фрейм для Часов NPI
 hoursForOutNPI = hoursForOut[hoursForOut['value'] != "Опт"]
 hoursForOutNPI = hoursForOutNPI.copy()
-hoursForOutNPI.loc[hoursForOutNPI['value'] == "8 часов DSS", 'Механика'] = 2
+hoursForOutNPI.loc[hoursForOutNPI['value'] == "4 часа", 'Механика'] = 2
 hoursForOutNPI = hoursForOutNPI.copy()
-hoursForOutNPI.loc[hoursForOutNPI['value'] == "4 часа DSS", 'Механика'] = 2
-hoursForOutNPI = hoursForOutNPI.copy()
-hoursForOutNPI.loc[hoursForOutNPI['value'] == "8 KA", 'Механика'] = 1
-hoursForOutNPI = hoursForOutNPI.copy()
-hoursForOutNPI.loc[hoursForOutNPI['value'] == "4 KA", 'Механика'] = 1
-hoursForOutNPI = hoursForOutNPI.copy()
-hoursForOutNPI.loc[hoursForOutNPI['value'] == "8 часов DSS", 'Часы'] = 8
-hoursForOutNPI = hoursForOutNPI.copy()
-hoursForOutNPI.loc[hoursForOutNPI['value'] == "4 часа DSS", 'Часы'] = 4
-hoursForOutNPI = hoursForOutNPI.copy()
-hoursForOutNPI.loc[hoursForOutNPI['value'] == "8 KA", 'Часы'] = 8
-hoursForOutNPI = hoursForOutNPI.copy()
-hoursForOutNPI.loc[hoursForOutNPI['value'] == "4 KA", 'Часы'] = 4
+hoursForOutNPI.loc[hoursForOutNPI['value'] == "4 часа", 'Часы'] = 4
+
 
 """
 #Фрейм для Часов Опт
@@ -139,3 +129,16 @@ with pd.ExcelWriter('out_file/out.xlsx', mode= 'a') as writer:
 with pd.ExcelWriter('out_file/out.xlsx', mode= 'a') as writer:
     contactsForOutOpt.to_excel(writer, sheet_name='Контакты Опт', index=False)
 """
+
+#УВОЛЬНЕНИЯ
+
+#Удаление лишних строк
+dismissed = hoursForOutFirst.dropna(subset= ["value"])
+dismissed = dismissed[dismissed['value'] == "Уволен/Уволился"]
+
+#Удаление не нужного текста
+dismissed['variable'] = dismissed['variable'].str.replace('Выберите механику и количество отработанных часов x ', '')
+
+#Запись в файл
+with pd.ExcelWriter('out_file/out.xlsx', mode= 'a') as writer:
+    dismissed.to_excel(writer, sheet_name='Уволенные', index=False)
